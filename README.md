@@ -5,7 +5,7 @@ name indicates, counts the number of clock cycles elapsed since some
 arbitrary instant. It shall be noted that such counters are often
 distinct from "time stamp counters". For instance, x86 CPUs have
 featured a sort-of cycle counter, which can be read with the `rdtsc`
-opcode, since the original Pentium (introduced in 1993). Such time-stamp
+opcode, since the original Pentium (introduced in 1993). Such time stamp
 counters originally matched the cycle counter, but this is no longer
 true now that frequency scaling is a thing: CPUs will commonly lower or
 raise their operating frequency depending on current load and
@@ -35,15 +35,15 @@ performance counters then you should use the performance counter APIs,
 which are a set of system calls and ad hoc structures by which you can
 have the kernel read such counters for you, and report back. [In the
 case of Linux](https://web.eece.maine.edu/~vweaver/projects/perf_events/),
-this really entails a using a specific system call to set up some
-special file descriptors, and the value of any performance counter can
-either be read with a `read()` system call, or possibly sampled at a
-periodic frequency (e.g. 1000 Hz) and transmitted back to the userland
-process via some shared memory. On other operating systems, a similar
-but of course incompatible and possibly undcoumented API can achieve
-about the same result (e.g. on
+this really entails using a specific system call to set up some special
+file descriptors, and the value of any performance counter can either be
+read with a `read()` system call, or possibly sampled at a periodic
+frequency (e.g. 1000 Hz) and transmitted back to the userland process
+via some shared memory. On other operating systems, a similar but of
+course incompatible and possibly undocumented API can achieve about the
+same result (e.g. on
 [macOS](https://gist.github.com/ibireme/173517c208c7dc333ba962c1f0d67d12)).
-Of course, access to these monotoring system calls normally requires
+Of course, access to these monitoring system calls normally requires
 superuser privilege.
 
 For tight loop optimization, which can be quite hairy in a world where
@@ -71,20 +71,20 @@ Remember that:
     do that on a multi-tenant machine (though the wisdom of multi-tenant
     machines on modern hardware is a bit questionable these days).
 
-  - On some the smallest embedded systems (microcontrollers), maintaining
+  - On some of the smallest embedded systems (microcontrollers), maintaining
     the cycle counter can incur a noticeable increase in power draw; you'd
     prefer to reserve that to development boards, not production hardware.
 
   - Cycle counts are per-core. If the operating system decides to
     migrate your process from one core to another, then cycle counts
     will apparently "jump". This is in general not much of a problem for
-    development, because the OS tries not to migrate processes in
-    general (it's expensive). You can instruct the OS to "tie" a thread
-    to a specific CPU core with the
+    development, because the OS tries not to migrate processes (it's
+    expensive). You can instruct the OS to "tie" a thread to a specific
+    CPU core with the
     [`sched_setaffinity()`](https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html)
-    system call; you will want to do that if you have asymmetric hardware
-    with "efficiency" and "performance" cores, so that you can bench
-    performance on either type of core.
+    system call; you will want to do that if you have asymmetric
+    hardware with "efficiency" and "performance" cores, so that you can
+    bench performance on either type of core.
 
 The [`test_cycle.c`](test_cycle.c) file is a demonstration application
 that more-or-less expects to run on a Linux-like system; it uses the
@@ -124,7 +124,7 @@ $ ./test_cycle 3
 
 We see here that on the A55, 64-bit multiplications return the low word
 of the output earlier when the operands are mathematically small enough
-(and this is a problem for cryptographic algorithm; the early return may
+(and this is a problem for cryptographic schemes; the early return may
 allow secret-revealing timing attacks).
 
 If you try this program on your machine, then chances are that it will
@@ -135,9 +135,9 @@ at least superuser access, as described below.
 # x86
 
 On x86 CPUs, the cycle counter can be read with the `rdpmc` opcode, using
-the registers `0x40000001`. A typical access would use this function:
+the register `0x40000001`. A typical access would use this function:
 
-```
+```c
 static inline uint64_t
 core_cycles(void)
 {
@@ -176,7 +176,7 @@ the host does not agree.
 On ARMv8 (ARMv8-A in 64-bit mode, aka "aarch64" or "arm64"), the cycle
 counter is read with a bit of inline assembly:
 
-```
+```c
 static inline uint64_t
 core_cycles(void)
 {
@@ -240,7 +240,7 @@ older kernel version.
 On a 64-bit RISC-V system, the cycle counter is read with the `rdcycle`
 instruction:
 
-```
+```c
 static inline uint64_t
 core_cycles(void)
 {
